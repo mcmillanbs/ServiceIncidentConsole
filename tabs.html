@@ -1,0 +1,43 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+<HEAD>
+<TITLE>Tabs Console</TITLE>
+<!---->
+<style>
+
+</style>
+<!---->
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+<!---->
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui.min.js"></script>
+<!---->
+<link rel="stylesheet" type="text/css" href="stylesheets/tabs.css"/>
+<!----
+<LINK REL="STYLESHEET" TYPE="TEXT/CSS" HREF="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/base/jquery-ui.css" />
+<!---->
+<script type=text/javascript>
+	$(document).ready(function(){
+		$("#DETAILS").tabs();
+	});
+</script>
+<!---->
+</HEAD>
+
+<BODY>
+<DIV ID=DETAILS>
+	<UL>
+		<LI><a href=#HEADER>Header</a></li>
+		<LI><a href=#ACTION>Action</a></li>
+		<LI><a href=#WORKLOG>Worklog</a></li>
+		<LI><a href=#xDETAILS>Details</a></li>
+		<LI><a href=#FOOTER>Footer</a></li>
+	</UL>
+	<DIV ID="SUB-NAV" CLASS="SUB-NAV"></DIV>
+	<DIV ID="HEADER"><H1>HEADER</H1></DIV>
+	<DIV ID="ACTION"><H1>ACTION</H1></DIV>
+	<DIV ID="WORKLOG"><H1>WORKLOG</H1></DIV>
+	<DIV ID="xDETAILS"><H1>DETAILS</H1></DIV>
+	<DIV ID="FOOTER"><H1>FOOTER</H1></DIV>
+</DIV>
+</BODY>
+</HTML>

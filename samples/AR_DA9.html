@@ -1,0 +1,267 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Send Event to Parent</title>
+
+<style type="text/css">
+.btn {
+ font-family: "AR Sans Serif", "MS Sans Serif", Tahoma; 
+font-size: 8pt;
+color: #333333;
+background-color:#bddf95;
+padding:5px 30px 6px 30px;
+height: 27px;
+border: 0;
+float: left;
+border-top: #e5f2d5 1px solid;
+border-right: #95b276 1px solid;
+border-bottom: #95b276 1px solid;
+border-left: #e5f2d5 1px solid;
+cursor:hand;
+
+}
+
+.btnhover {
+ font-family: "AR Sans Serif", "MS Sans Serif", Tahoma; 
+font-size: 8pt;
+color: #333333;
+background-color:#acca89;
+padding:5px 30px 6px 30px;
+height: 27px;
+border: 0;
+float: left;
+border-top: #e5f2d5 1px solid;
+border-right: #95b276 1px solid;
+border-bottom: #95b276 1px solid;
+border-left: #e5f2d5 1px solid;
+cursor:hand;
+
+}
+
+.btnDisabled{
+ font-family: "AR Sans Serif", "MS Sans Serif", Tahoma; 
+font-size: 8pt;
+color: #868f93;
+background-color:#bddf95;
+padding:5px 30px 6px 30px;
+height: 27px;
+border: 0;
+float: left;
+border-top: #e5f2d5 1px solid;
+border-right: #95b276 1px solid;
+border-bottom: #95b276 1px solid;
+border-left: #e5f2d5 1px solid;
+}
+
+.btnMore{
+ font-family: "AR Sans Serif", "MS Sans Serif", Tahoma; 
+font-size: 8pt;
+color: #333333;
+background-color:#eee378;
+padding:5px 30px 6px 30px;
+height: 27px;
+border: 0;
+float: left;
+border-top: #f8f4ca 1px solid;
+border-right: #a7a355 1px solid;
+border-bottom: #a7a355 1px solid;
+border-left: #f8f4ca 1px solid;
+cursor:hand;
+}
+
+td.border
+{
+border-width: 0px;
+border-color: #b0d08b;
+border-style: solid;
+
+}
+
+
+</style>
+
+<!--EventFrameworkScript-->
+<script type='text/javascript'>
+var html_template_id = '000000000000654';
+var vf_FieldId = '910000000';
+
+function BaseController(parentDispatcher) {
+	this.midTierContextPath = null; // will be set by server
+	this.parentEventHandlers = new Array();
+	if (parentDispatcher != null && (typeof parentDispatcher == 'object')) {
+		this.parentDispatcher = parentDispatcher;
+		this.parentDispatcher.setEventHandler(this, this.dispatchParentEvent);
+	}
+}
+
+BaseController.prototype.sendEventToParentForm = function(eventType, eventData) {
+	return this.parentDispatcher.sendEventToParentForm(eventType, eventData);
+}
+
+BaseController.prototype.registerDVFHandler = function(type, handler) {
+	this.parentEventHandlers[type] = handler;
+}
+
+//non-public method. For internal use only
+BaseController.prototype.dispatchParentEvent = function(type, data) {
+	var handler = this.parentEventHandlers[type];
+	if (handler) {
+		return handler(type, data);
+	}
+	return '';
+}
+	
+// Singleton instance of the controller, var is initialized in
+// initPageScripting(). [See Setup.js].
+var Controller = null;
+var EventDispatcher=new function() {
+	var fieldID=vf_FieldId;
+	this.sendEventToParentForm=function(eventType,eventData) {
+		try {
+			if('external' in window && 'SendSignal' in window.external) {
+				  //alert ('external parent')
+				  return window.external.SendSignal(fieldID+'',eventType+'',eventData+'');
+			}
+		} catch(e) {
+			alert ('SEvtoParent: '+e)
+		}
+		if (parent.DView != undefined)
+		return parent.DView.SendSignalToParent('F'+fieldID,eventType+'',eventData+'');
+	};
+
+	this.sendParentRefresh=function() {
+		parent.DView.Refresh(fieldID);
+	}
+
+	this.setEventHandler=function(obj, fp) {
+		this.mCBObj=obj;
+		this.mCBFp=fp;
+	};
+
+	this.dispatch=function(et,ed) {
+		if (!this.mCBFp) return;
+		var func=this.mCBFp;
+		var obj=this.mCBObj;
+		setTimeout(function() {
+			if (obj)
+				  func.apply(obj,[et,ed]);
+			else
+				  func(et,ed);
+		},1);
+	};
+}
+
+var Controller = new BaseController(EventDispatcher);
+
+window.onerror=customHandler;
+
+function customHandler(desc,page,line,chr)  {
+	var str = '';
+	var userContent = '';             
+	str = '<template>' + html_template_id + '</template>';
+	str += '<message>Error description: '+desc +' line number: ' + line;
+	if(chr!=undefined) {
+		 str += ' character: ' + chr ;
+	}
+	str += '</message>';
+	str += '<content>' + userContent + '</content>';     
+	Controller.sendEventToParentForm('javascriptError', str);
+	return true;
+}
+
+</script>
+
+
+
+<script type="text/javascript">
+
+
+<!--NoRightClick-->
+
+<!--UserContent-->
+var formElements = new Array ({'type':'btn_dropdown','label':'Resolution Actions','guide':'ESMSI:OpenResolutionActions'},{'type':'btn_dropdown','label':'Ticket Linking','guide':'ESMSI:OpenTicketLinking'},{'type':'btn_dropdown','label':'External Actions','guide':'ESMSI:OpenExternalActions'},{'type':'btn_dropdown','label':'Change Requests','guide':'ESMSI:OpenChangeRequests'},{'type':'btn_dropdown','label':'Ticket Assignment','guide':'ESMSI:OpenTicketAssign'},{'type':'btn_more','label':'Edit Ticket','guide':'ESMSI:EditTicket'},{});
+
+imageDir = "http://chamar2:9876/images/";
+
+function initSetupScript() {
+    
+}
+
+function submitRequest(obj,event) {
+	//obj.className = "btnhover";
+	Controller.sendEventToParentForm('RunGuide',event);
+}
+
+</script>
+</head>
+<body onload="initSetupScript()" leftmargin="0px" topmargin="0px" marginwidth="0px" marginheight="0px" bgcolor="#cdecb6">
+<table border="0" width="1110px;" cellpadding="0" cellspacing="0">
+<tr><td>
+
+<script>
+function buildForm(elementList) {
+	document.write("<form>")
+	for (e=0; e < elementList.length; e++ ) {
+		var elementType = elementList[e].type;
+		switch (elementType) {
+			case 'btn':
+				displaybtn(elementList[e])
+				break
+			case 'btn_disabled':
+				displaybtn_disabled(elementList[e])
+				break
+			case 'btn_more':
+				displaybtn_more(elementList[e])
+				break
+			case 'btn_dropdown':
+				displaybtn_dropdown(elementList[e])
+				break
+			default:
+				break
+		}
+	}
+	document.write("</form>")
+}
+
+
+
+function displaybtn(specs) {
+	var b_Label = specs.label;
+	var b_Guide = specs.guide;
+	var btnId = 'btn_' + b_Label.replace(' ','');
+	document.write("<div id='" + btnId + "'  class='btn' onclick=submitRequest(this,'" + b_Guide + "') onmouseover=this.className='btnhover' onmouseout=this.className='btn' >" + b_Label + "</div>");
+}
+
+
+function displaybtn_disabled(specs) {
+	var b_Label = specs.label;
+	var b_Guide = specs.guide;
+	var btnId = 'btn_' + b_Label.replace(' ','');
+	document.write("<div id='" + btnId + "'  class='btnDisabled' >" + b_Label + "</div>")
+}
+
+function displaybtn_more(specs) {
+	var b_Label = specs.label;
+	var b_Guide = specs.guide;
+	var btnId = 'btn_' + b_Label.replace(' ','');
+	document.write("<div id='" + btnId + "'  class='btnMore' onclick=submitRequest(this,'" + b_Guide + "')>" + b_Label + "</div>")
+}
+
+function displaybtn_dropdown(specs) {
+	//alert(specs.label);
+	var b_Label = specs.label;
+	var b_Guide = specs.guide;
+	var btnId = 'btn_' + b_Label.replace(' ','');
+	document.write("<div id='" + btnId + "' class='btn' onclick=submitRequest(this,'" + b_Guide + "') onmouseover=this.className='btnhover' onmouseout=this.className='btn' >" + b_Label + "&nbsp<img id='img_" + b_Label + "' style='visibility:visible;border:0px;margin:0;' src='http://chamar2:9876/images/icon_small_arrow_dark.png'></div>")
+}
+
+buildForm(formElements);
+
+</script>
+</td>
+</tr>
+</table>
+</body>
+</html>
+

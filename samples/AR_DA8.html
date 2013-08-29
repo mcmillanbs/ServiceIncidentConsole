@@ -1,0 +1,1051 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Send Event to Parent</title>
+
+<style type="text/css">
+.t1 {
+font-size:20px;
+font-weight:bold;
+color:#ffffff;
+font-family:Arial;
+background-color:#be1c1e;
+width:52px; 
+text-align:center;
+}
+
+.t2 {
+font-size:26px;
+font-weight:bold;
+color:white;
+font-family:Arial;
+cursor:default;
+text-align:left;
+padding:0px 0px 0px 10px;
+}
+
+
+.h1 {
+font-size:20px;
+font-weight:bold;
+color:white;
+font-family:Arial;
+cursor:default;
+}
+
+.h2 {font-size:13px;
+font-weight:bold;
+color:#779ec7;
+font-family:Arial;
+cursor:default;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+padding:0px 0px 5px 10px;
+}
+
+.h3 {
+font-size:13px;
+font-weight:bold;
+color:#779ec7;
+font-family:Arial;
+cursor:default;
+border-top:#647689 .1em solid ;
+padding:5px 0px 5px 5px;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+
+}
+
+.h3right {
+font-size:13px;
+font-weight:bold;
+color:#779ec7;
+font-family:Arial;
+border-top:#647689 .1em solid ;
+padding:5px 10px 5px 5px;
+text-align:right;
+white-space: nowrap;
+overflow: hidden;
+}
+
+.h4 {
+font-size:8pt;
+color:#708792;
+font-family: "AR Sans Serif", "MS Sans Serif", Tahoma;
+cursor:default;
+}
+
+
+.v1 {
+font-size:20px;
+color:white;
+font-family:Arial;
+cursor:default;
+text-decoration: none; 
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+}
+
+.v2 {
+font-size:13px;
+color:#b2cbe5;
+text-decoration: none; 
+font-family:Arial;
+cursor:default;
+}
+
+.v3 {
+font-size:13px;
+color:#7bbaf6;
+font-family:Arial;
+width:200px;
+cursor:hand;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+}
+
+.v4 {
+font-size:13px;
+color:#eef026;
+font-family:Arial;
+cursor:default;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+}
+
+
+.v5 {
+font-size:13px;
+color:#b2cbe5;
+font-family:Arial;
+cursor:default;
+text-decoration: none; 
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+}
+
+.v6 {
+font-size:10pt;
+color:#b2cbe5;
+font-family: "AR Sans Serif", "MS Sans Serif", Tahoma;
+font-weight:normal;
+white-space: nowrap;
+overflow: hidden;
+}
+
+.table1 {
+border-spacing: 0px;
+width: 100%;
+padding: 0px;
+border-style:solid;
+border-width:0px;
+}
+
+.table2{
+border-spacing: 0px;
+width: 100%;
+border-style:solid;
+border-width:0px;
+}
+
+.contact {
+ color: #80c2ff; 
+ text-decoration: none; 
+ cursor: pointer;
+ }
+ 
+ .dtslink {
+ color: #ffffff; 
+ text-decoration: none; 
+ cursor: pointer;
+ }
+
+.headerimage {background-image:url('http://chamar2:9876/images/SI_BANNER.png');background-repeat:no-repeat;}
+
+.redESR {
+color: #ff5557;
+text-decoration: none; 
+cursor:default;
+}
+
+.greenESR {
+color: #BDDF95;
+text-decoration: none; 
+cursor:default;
+}
+
+.yellowESR {
+color: #EEE378;
+text-decoration: none; 
+cursor:default;
+}
+.cursorOn {
+cursor:hand;
+}
+
+
+</style>
+
+
+<!--EventFrameworkScript-->
+<script type='text/javascript'>
+var html_template_id = '000000000000877';
+var vf_FieldId = '910000000';
+
+function BaseController(parentDispatcher) {
+	this.midTierContextPath = null; // will be set by server
+	this.parentEventHandlers = new Array();
+	if (parentDispatcher != null && (typeof parentDispatcher == 'object')) {
+		this.parentDispatcher = parentDispatcher;
+		this.parentDispatcher.setEventHandler(this, this.dispatchParentEvent);
+	}
+}
+
+BaseController.prototype.sendEventToParentForm = function(eventType, eventData) {
+	return this.parentDispatcher.sendEventToParentForm(eventType, eventData);
+}
+
+BaseController.prototype.registerDVFHandler = function(type, handler) {
+	this.parentEventHandlers[type] = handler;
+}
+
+//non-public method. For internal use only
+BaseController.prototype.dispatchParentEvent = function(type, data) {
+	var handler = this.parentEventHandlers[type];
+	if (handler) {
+		return handler(type, data);
+	}
+	return '';
+}
+	
+// Singleton instance of the controller, var is initialized in
+// initPageScripting(). [See Setup.js].
+var Controller = null;
+var EventDispatcher=new function() {
+	var fieldID=vf_FieldId;
+	this.sendEventToParentForm=function(eventType,eventData) {
+		try {
+			if('external' in window && 'SendSignal' in window.external) {
+				  //alert ('external parent')
+				  return window.external.SendSignal(fieldID+'',eventType+'',eventData+'');
+			}
+		} catch(e) {
+			alert ('SEvtoParent: '+e)
+		}
+		if (parent.DView != undefined)
+		return parent.DView.SendSignalToParent('F'+fieldID,eventType+'',eventData+'');
+	};
+
+	this.sendParentRefresh=function() {
+		parent.DView.Refresh(fieldID);
+	}
+
+	this.setEventHandler=function(obj, fp) {
+		this.mCBObj=obj;
+		this.mCBFp=fp;
+	};
+
+	this.dispatch=function(et,ed) {
+		if (!this.mCBFp) return;
+		var func=this.mCBFp;
+		var obj=this.mCBObj;
+		setTimeout(function() {
+			if (obj)
+				  func.apply(obj,[et,ed]);
+			else
+				  func(et,ed);
+		},1);
+	};
+}
+
+var Controller = new BaseController(EventDispatcher);
+
+window.onerror=customHandler;
+
+function customHandler(desc,page,line,chr)  {
+	var str = '';
+	var userContent = '';             
+	str = '<template>' + html_template_id + '</template>';
+	str += '<message>Error description: '+desc +' line number: ' + line;
+	if(chr!=undefined) {
+		 str += ' character: ' + chr ;
+	}
+	str += '</message>';
+	str += '<content>' + userContent + '</content>';     
+	Controller.sendEventToParentForm('javascriptError', str);
+	return true;
+}
+
+</script>
+
+
+<script type="text/javascript">
+
+//Function to format time from EPOCH
+
+function _AddZero(_txt) {
+  if (_txt < 10) {
+    return '0'+_txt;
+  } else {
+    return _txt;
+  }
+}
+function ConvertUTC_Date(UTC) {
+  var myDate = new Date(UTC*1000);
+  return _AddZero(myDate.getMonth() + 1) + '/' + _AddZero(myDate.getDate()) + '/' + myDate.getFullYear();
+}
+
+function ConvertUTC_Time(UTC) {
+	var myTime = new Date(UTC*1000);
+	var _ReturnHour = myTime.getHours();
+	var _ReturnMeridiem = 'AM';
+
+	if (_ReturnHour > '11') {
+		_ReturnMeridiem = 'PM';
+	} 
+
+	if (_ReturnHour == 0) {
+		_ReturnHour = 12;
+	} else if (_ReturnHour > 12) {
+		_ReturnHour = _ReturnHour - 12;
+	}
+
+	return _ReturnHour + ':' + _AddZero(myTime.getMinutes()) + ' ' + _ReturnMeridiem;
+}
+
+function ConvertUTC(UTC) {
+  if (UTC <= 0 || UTC == '') {
+    return ' ';
+  }
+  var _Date = ConvertUTC_Date(UTC);
+  var _Time = ConvertUTC_Time(UTC);
+  return _Date + ' ' + _Time;
+}// This is used to build a clickable link to send an event to open a contact card.
+//
+// Expects a contact object which is an anonymous object with a 'name' and a 'login' property.
+// i.e.   var contact = {name:'Lucky McGee', login:'lmcgee'};
+//
+//Be sure to add the following to CSS
+ // a, .link {color: #1c5fe6; text-decoration: none; cursor: pointer;} 
+//
+function buildContactLink ( contact_obj, link_color ) {
+   if ( link_color == undefined ) {
+      if(contact_obj.login=="XMLCSG") {
+	  return '<span >' + contact_obj.name + '</span>';
+	  } else {
+	  return '<span class="link" onclick="OpenContact(\'' + contact_obj.login + '\');">' + contact_obj.name + '</span>';
+	  }
+   }
+   else {
+	  if(contact_obj.login=="XMLCSG") {
+	  return '<span >' + contact_obj.name + '</span>';
+	  } else {
+      return '<span class="link" onclick="OpenContact(\'' + contact_obj.login + '\');">' + contact_obj.name + '</span>';
+	  }
+   }
+}
+
+function OpenContact(login) {
+      Controller.sendEventToParentForm("OpenContact",login);
+}
+<!--NoRightClick-->
+
+<!--UserContent-->
+var service_incident=  {
+   ticket_id:"SI000032316",
+   alarm_start:ConvertUTC("1354295440"),
+   submitter: {name:"Mac McMillan", login:"bmcmil200"},
+   create_date:ConvertUTC("1354295440"),
+   submitted_date:ConvertUTC("1354296362"),
+   last_modified_by: {name:"Mac McMillan", login:"bmcmil200"},
+   modified_date:ConvertUTC("1354296365"),
+   submitting_group: {id:"MW12003", name:"Mile High XOC"},
+   source:"Agent",
+   source_reference:"",
+   parent_id:"",
+   status:"Working",
+   severity:"Sev 2",
+   service_condition:"Unaffected",
+   next_action:"",
+   estimated_service_restore:ConvertUTC("1354310761"),
+   external_assignee:"",
+   external_reference:"",
+   externally_owned:"",
+   incident: {
+      code:"10494",
+      summary:"Whole Node Outage",
+      category:"HFC/Plant",
+      subcategory:"Node"},
+   contact: {
+      department:"asdf",
+      phone:"1234"},
+   assignment:{
+      region: {id:"MW1200", name:"MILE HIGH REGION"},
+      support_area: {id:"MW12003", name:"Mile High XOC"},
+      queue: {id:"000664", name:"PUC"},
+      assigned_to: {name:"Mac McMillan", login:"bmcmil200"},
+      assigned_date: ConvertUTC("1354296362")},
+   resolution_details: {
+      closed_by: {name:"", login:""},
+      closed_date: ConvertUTC(""),
+      resolved_by: {name:"", login:""},
+      cause: { code:"", summary:"", category:"", subcategory:""},
+      solution: { code:"", summary:"", category:"", subcategory:""}},
+   ttr: {
+      ttr_start: ConvertUTC("1354296361"),
+      ttr_stop: ConvertUTC(""),
+      ttr_adjustments:""},
+   current_details: {
+      dts_weight:"699",
+      locked_by: {name: "", login: ""},
+      locked_date: ConvertUTC("")},
+   attributes: [
+      { attr_type: "Network", attr_label: "Contact Info Department", attr_value: "asdf"},
+      { attr_type: "Network", attr_label: "Contact Info Phone", attr_value: "1234"},
+      { attr_type: "Network", attr_label: "Customer Experience", attr_value: "asdf"},
+      { attr_type: "Network", attr_label: "Detected By", attr_value: "Correlation"},
+      { attr_type: "Network", attr_label: "Indicator City", attr_value: "Arapahoe County"},
+      { attr_type: "Network", attr_label: "Indicator State", attr_value: "CO"},
+      { attr_type: "Network", attr_label: "Outage Description", attr_value: "adf"}
+   ],
+   services: {
+      total_sub_count: "868",
+      details: [
+      {ci_alias: "Voice", ci_type: "Product", ci_unique_id: "Voice.Product.Comcast", status: "In Progress", service_condition: "Outage", actual_start:ConvertUTC("1354295440"), actual_end:ConvertUTC(""), customer_impact_description: "This is a really big outage"},
+      {ci_alias: "Internet", ci_type: "Product", ci_unique_id: "Internet.Product.Comcast", status: "In Progress", service_condition: "Outage", actual_start:ConvertUTC("1354295440"), actual_end:ConvertUTC(""), customer_impact_description: ""},
+      {ci_alias: "Video", ci_type: "Product", ci_unique_id: "Video.Product.Comcast", status: "In Progress", service_condition: "Outage", actual_start:ConvertUTC("1354295440"), actual_end:ConvertUTC(""), customer_impact_description: "This is a big outage."}
+   ]},
+   correlation_count: {
+      correlation_number: "0",
+      element_number: "5",
+      correlation_customer_number: "0"},
+   elements: {
+         primary: [
+         {
+         element_name: "HR08",
+         element_type: "Node",
+         element_id: "HR08.000741.NODE.Comcast",
+         status: "In Progress",
+         total_aff_subs: "0",
+         etr: ConvertUTC(""),
+         qualifier: "",
+         system: {id:"000741", name:"DENVER METRO"},
+         cause: { code:"", summary:"", category:"", subcategory:""},
+         solution: { code:"", summary:"", category:"", subcategory:""},
+         actual_start: ConvertUTC("1354295440"),
+         actual_end: ConvertUTC("")}
+      ],
+      impacted: []},
+   locations:[
+      {ci_alias: "Denver4", ci_type: "Management Area", ci_unique_id: "MA00008.Management Area.Comcast", status: "In Progress", actual_start:ConvertUTC("1354295440"), actual_end:ConvertUTC("")},
+      {ci_alias: "Denver3", ci_type: "Management Area", ci_unique_id: "MA00007.Management Area.Comcast", status: "In Progress", actual_start:ConvertUTC("1354295440"), actual_end:ConvertUTC("")},
+      {ci_alias: "Mocha Magic", ci_type: "Management Area", ci_unique_id: "MA00015.Management Area.Comcast", status: "In Progress", actual_start:ConvertUTC("1354295440"), actual_end:ConvertUTC("")},
+      {ci_alias: "Pam Test", ci_type: "Management Area", ci_unique_id: "MA00013.Management Area.Comcast", status: "In Progress", actual_start:ConvertUTC("1354295440"), actual_end:ConvertUTC("")},
+      {ci_alias: "Denver6", ci_type: "Management Area", ci_unique_id: "MA00014.Management Area.Comcast", status: "In Progress", actual_start:ConvertUTC("1354295440"), actual_end:ConvertUTC("")},
+      {ci_alias: "Denver2", ci_type: "Management Area", ci_unique_id: "MA00006.Management Area.Comcast", status: "In Progress", actual_start:ConvertUTC("1354295440"), actual_end:ConvertUTC("")},
+      {ci_alias: "MILE HIGH REGION", ci_type: "Region", ci_unique_id: "MW1200.Region.Comcast", status: "In Progress", actual_start:ConvertUTC("1354295440"), actual_end:ConvertUTC("")},
+      {ci_alias: "Denver1", ci_type: "Management Area", ci_unique_id: "MA00005.Management Area.Comcast", status: "In Progress", actual_start:ConvertUTC("1354295440"), actual_end:ConvertUTC("")},
+      {ci_alias: "Penny's Pad", ci_type: "Management Area", ci_unique_id: "MA00016.Management Area.Comcast", status: "In Progress", actual_start:ConvertUTC("1354295440"), actual_end:ConvertUTC("")},
+      {ci_alias: "DENVER METRO", ci_type: "System", ci_unique_id: "000741.System.Comcast", status: "In Progress", actual_start:ConvertUTC("1354295440"), actual_end:ConvertUTC("")}
+   ]
+};var outage = {duration:9915, status:'active'};
+var showDTS=true;;var Threshold = "";var privString= "Agent Basic;Agent Create_Network;Agent Manage_Commercial_Customer;Agent Administrator;National Level Admin Basic;Regional Level Admin Basic;Support Area Level Admin Basic;Supervisor Basic;Agent ManageElements;Agent ServiceDeskSuper;Agent CR Ticket Access;Task Basic;Task Create;CM Basic;Agent ESMUIPilot;Agent Support Area Code Admin;Agent Management Area Admin;ESL ESL_Tier2CreateEdit;Agent Service_Desk;Agent Create_Network_Commercial;Workflow_Management Admin;Workflow_Management Basic;CM User Basic;Support Area Level Admin Assignment_Admin;Supervisor Unlock Ticket;Agent CR Ticket Access;Task Basic;Task Create;CM Basic;Agent ESMUIPilot;Agent Monitor_Tickets;Agent Park_Tickets;Agent Manual_Tickets;ESL ESL_Tier2CreateEdit;Agent Service_Desk;Agent SR_Send_Notification;Agent Correlation_Admin;Agent Send Notification;Agent Monitor Ticket;Agent Park Ticket;";var EditMode= "ReadOnly";
+
+
+//Function to format time from EPOCH
+
+function _AddZero(_txt) {
+  if (_txt < 10) {
+    return '0'+_txt;
+  } else {
+    return _txt;
+  }
+}
+function ConvertUTC_Date(UTC) {
+  var myDate = new Date(UTC*1000);
+  return _AddZero(myDate.getMonth() + 1) + '/' + _AddZero(myDate.getDate()) + '/' + myDate.getFullYear();
+}
+
+function ConvertUTC_Time(UTC) {
+	var myTime = new Date(UTC*1000);
+	var _ReturnHour = myTime.getHours();
+	var _ReturnMeridiem = 'AM';
+
+	if (_ReturnHour > '11') {
+		_ReturnMeridiem = 'PM';
+	} 
+
+	if (_ReturnHour == 0) {
+		_ReturnHour = 12;
+	} else if (_ReturnHour > 12) {
+		_ReturnHour = _ReturnHour - 12;
+	}
+
+	return _ReturnHour + ':' + _AddZero(myTime.getMinutes()) + ' ' + _ReturnMeridiem;
+}
+
+function ConvertUTC(UTC) {
+  if (UTC <= 0 || UTC == '') {
+    return ' ';
+  }
+  var _Date = ConvertUTC_Date(UTC);
+  var _Time = ConvertUTC_Time(UTC);
+  return _Date + ' ' + _Time;
+}// This is used to build a clickable link to send an event to open a contact card.
+//
+// Expects a contact object which is an anonymous object with a 'name' and a 'login' property.
+// i.e.   var contact = {name:'Lucky McGee', login:'lmcgee'};
+//
+//Be sure to add the following to CSS
+ // a, .link {color: #1c5fe6; text-decoration: none; cursor: pointer;} 
+//
+function buildContactLink ( contact_obj, link_color ) {
+   if ( link_color == undefined ) {
+      if(contact_obj.login=="XMLCSG") {
+	  return '<span >' + contact_obj.name + '</span>';
+	  } else {
+	  return '<span class="link" onclick="OpenContact(\'' + contact_obj.login + '\');">' + contact_obj.name + '</span>';
+	  }
+   }
+   else {
+	  if(contact_obj.login=="XMLCSG") {
+	  return '<span >' + contact_obj.name + '</span>';
+	  } else {
+      return '<span class="link" onclick="OpenContact(\'' + contact_obj.login + '\');">' + contact_obj.name + '</span>';
+	  }
+   }
+}
+
+function OpenContact(login) {
+      Controller.sendEventToParentForm("OpenContact",login);
+}
+<!--NoRightClick-->
+<!--UserContent-->
+
+//additional user content need to pull from the service
+//default values
+//var showDTS = true;
+//var DurationTicker = ';		
+//var Threshold = '';
+
+<!--UserContent-->
+var DTS = service_incident.current_details.dts_weight; 
+var TicketID = service_incident.ticket_id;
+var ProblemSummary = service_incident.incident.summary; 
+var ServiceCondition = service_incident.service_condition; 
+var SubCount = service_incident.services.total_sub_count; 
+var Severity = service_incident.severity; 
+var TicketStatus = service_incident.status; 
+var Assigned = service_incident.assignment.assigned_to; 
+var LockedBy = service_incident.current_details.locked_by; 
+var ESR = service_incident.estimated_service_restore; 
+var NextAction = trim(service_incident.next_action); 
+var Element = ''; //value set in function
+
+function trim(str) {
+	return str.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+}
+
+<!-- Add as common function -->
+var ReadOnlyPriv = true;
+var TaskPriv = false;
+var TicketPriv = false; 
+
+function setEditMode() {
+
+     switch (EditMode)
+	 {
+		case "ReadOnly":
+			ReadOnlyPriv = true;
+			TicketPriv = false; 
+			TaskPriv = false;
+			break;
+		case "Task":
+			ReadOnlyPriv = false;
+			TicketPriv = false; 
+			TaskPriv = true;
+			break;
+		case "Ticket":
+			ReadOnlyPriv = false;
+			if(TicketStatus=="Linked") {
+				TicketPriv = false; 
+			} else {
+				TicketPriv = true; 
+			}
+			TaskPriv = false;
+			break;
+		default:
+			ReadOnlyPriv = true;
+			TicketPriv = false; 
+			TaskPriv = false;
+			break;
+	}
+}
+
+function hasPrivilege(priv) {
+	var position = privString.search(priv);
+
+	if(position>=0) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+<!-- End new common function -->
+
+var imageDir = "http://chamar2:9876/images/";
+function initSetupScript() {
+	document.getElementById('TicketID').innerHTML = TicketID;
+	document.getElementById('Status').innerHTML = TicketStatus;
+	document.getElementById('imgUpdate').src = imageDir + "button_next_action.png";
+	
+	setEditMode();
+	setTicketLock();
+	setDTS();
+	setProblemSummary();
+	setPrimaryElement();
+	setServiceCondition();
+	setSeverity();
+	setSubcount();
+	setAssigned();
+	setOutageTime();
+	setESR();
+	setNextAction();
+}
+
+function isTicketStatus(status) {
+	if(TicketStatus==status) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+function setTicketLock() {
+	var lockstring = "";
+
+	lockstring = "<TABLE border='0' id='ticketlock' width='100%' cellspacing='0' class='headerimage'>"
+
+	if (LockedBy.name==''){
+		lockstring = lockstring + "<TR><TD class='h4' height='35px' align='right' id='LockedBy'>Ticket is unlocked</TD>"
+		lockstring = lockstring + "<TD width='6px'></TD>"
+		lockstring = lockstring + "<TD align='right'width='6px'><img src='" + imageDir + "icon_unlocked.png' ></TD>"
+		}
+	else {
+		lockstring = lockstring + "<TR><TD class='h4' height='35px' align='right' id='LockedBy'>"
+		lockstring = lockstring + "Ticket is locked by " + buildContactLink(LockedBy,'#80c2ff') + "</TD>"		
+		lockstring = lockstring + "<TD width='6px'></TD>"
+		lockstring = lockstring + "<TD align='right' width='6px'>"
+		
+		if(TicketPriv&&hasPrivilege("Unlock Ticket")) {
+			lockstring = lockstring + "<img src='" + imageDir + "icon_locked.png' style='cursor:hand;' onclick='unlockTicket()'></TD>"
+		} else {
+			if(hasPrivilege("Unlock Ticket")) {
+				lockstring = lockstring + "<img src='" + imageDir + "icon_locked.png' style='cursor:hand;' onclick='unlockTicket()'></TD>"
+			} else {
+				lockstring = lockstring + "<img src='" + imageDir + "icon_locked.png' ></TD>"
+			}
+		}
+	}
+	lockstring = lockstring + "<TD width='10px'></TD></TR></TABLE>"
+
+	document.getElementById('ticketlock').innerHTML = lockstring;
+}
+
+function unlockTicket() {
+	if(hasPrivilege("Unlock Ticket")) {
+		//alert("good for you!  you can unlock this ticket");
+		Controller.sendEventToParentForm('RunGuide','ESMSI:UnlockSI');
+	} else {
+		//alert("No way!  you cannot unlock this ticket :(");
+	}
+	
+}
+
+function setDTS() {
+	if(showDTS) {
+	     if(DTS==0) {
+			document.getElementById('DTS').innerHTML = DTS;
+	    }
+		else {
+			document.getElementById('DTS').innerHTML = "<a href='#' onclick=Controller.sendEventToParentForm('RunGuide','ESMSI:OpenDTS') class='dtslink'>" + DTS + "</a>";
+	    }
+		document.getElementById('DTS').className = "t1";
+	}
+	else {
+		document.getElementById('DTS').innerHTML = DTS;
+		document.getElementById('DTS').className = "t1";
+		document.getElementById('DTS').style.visibility="hidden";
+	}
+}
+
+function setProblemSummary() {
+
+	if(TicketPriv) {
+		document.getElementById('ProblemSummary').innerHTML = "<a style='cursor:hand;' class='v1' href='#' onclick=submitRequest('ESMSI:OpenProblemCode') >" + ProblemSummary + "</a>&nbsp<img style='cursor:hand;' onclick=submitRequest('ESMSI:OpenProblemCode') id='imgProblemSummary' src='" + imageDir + "icon_header_menu_closed.png'>";
+		document.getElementById("ProblemSummary").style.cursor="hand";
+		
+	} else {
+		document.getElementById('ProblemSummary').innerHTML = ProblemSummary;
+		document.getElementById("ProblemSummary").style.cursor="default";
+	}
+}
+
+function setPrimaryElement() {
+
+	if(typeof service_incident.elements.primary=="object") {
+		if(service_incident.elements.primary.length==1) {
+			Element = service_incident.elements.primary[0].element_name; //'KC06';
+		} else {
+			Element = "Multiple Primary Elements";
+		}
+	} else {
+		Element = "The element is not available.";
+	}
+
+
+	document.getElementById('Element').innerHTML = Element;
+}
+
+
+function getUnresolvedServiceCount() {
+	var count = 0;
+	for(var n=0;n<service_incident.services.details.length;n++){
+		if(service_incident.services.details[n].status != "Resolved") {
+			count = count + 1;
+		}
+    }
+	return count;
+}
+
+function setServiceCondition() {
+	var details = ServiceCondition;	
+	var numServices = 0;
+	
+	numServices = getUnresolvedServiceCount();
+	
+	if(TicketPriv) {
+		switch (TicketStatus)
+		{
+			case "Ready to Work":
+				if(numServices>0) {
+					details = "<a style='cursor:hand;' class='v5' href='#' onclick=submitRequest('ESMSI:OpenSCPanel') >" + ServiceCondition + "</a>&nbsp<img style='cursor:hand;' onclick=submitRequest('ESMSI:OpenSCPanel') id='imgServiceCondition' src='" + imageDir + "icon_header_menu_closed.png'>";
+				} else {
+					details = ServiceCondition;
+				}
+				break;
+			case "Working":
+				if(numServices>0) {
+					details = "<a style='cursor:hand;' class='v5' href='#' onclick=submitRequest('ESMSI:OpenSCPanel') >" + ServiceCondition + "</a>&nbsp<img style='cursor:hand;' onclick=submitRequest('ESMSI:OpenSCPanel') id='imgServiceCondition' src='" + imageDir + "icon_header_menu_closed.png'>";
+				} else {
+					details = ServiceCondition;
+				}
+				break;
+			case "Monitoring":
+				if(numServices>0) {
+					details = "<a style='cursor:hand;' class='v5' href='#' onclick=submitRequest('ESMSI:OpenSCPanel') >" + ServiceCondition + "</a>&nbsp<img style='cursor:hand;' onclick=submitRequest('ESMSI:OpenSCPanel') id='imgServiceCondition' src='" + imageDir + "icon_header_menu_closed.png'>";
+				} else {
+					details = ServiceCondition;
+				}
+				break;
+			case "External":
+				if(numServices>0) {
+					details = "<a style='cursor:hand;' class='v5' href='#' onclick=submitRequest('ESMSI:OpenSCPanel') >" + ServiceCondition + "</a>&nbsp<img style='cursor:hand;' onclick=submitRequest('ESMSI:OpenSCPanel') id='imgServiceCondition' src='" + imageDir + "icon_header_menu_closed.png'>";
+				} else {
+					details = ServiceCondition;
+				}
+				break;		
+			case "Resolved":
+				if(hasPrivilege("Adjust TTR")) {
+					if(numServices>0) {
+						details = "<a style='cursor:hand;' class='v5' href='#' onclick=submitRequest('ESMSI:OpenSCPanel') >" + ServiceCondition + "</a>&nbsp<img style='cursor:hand;' onclick=submitRequest('ESMSI:OpenSCPanel') id='imgServiceCondition' src='" + imageDir + "icon_header_menu_closed.png'>";
+					} else {
+						details = ServiceCondition;
+					}
+				} else {
+					details = ServiceCondition;
+				} 		
+			case "Closed":
+				if(hasPrivilege("Adjust TTR")) {
+					if(numServices>0) {
+						details = "<a style='cursor:hand;' class='v5' href='#' onclick=submitRequest('ESMSI:OpenSCPanel') >" + ServiceCondition + "</a>&nbsp<img style='cursor:hand;' onclick=submitRequest('ESMSI:OpenSCPanel') id='imgServiceCondition' src='" + imageDir + "icon_header_menu_closed.png'>";
+					} else {
+						details = ServiceCondition;
+					}
+				} else {
+					details = ServiceCondition;
+				} 
+				break;		
+			default:
+				details = ServiceCondition ;
+				break;					
+		}
+	}
+	
+	document.getElementById('ServiceCondition').innerHTML = details;
+}
+
+
+function setSeverity() {
+	if(TicketPriv) {
+		document.getElementById('Severity').innerHTML = "<a style='cursor:hand;' class='v2' href='#' onclick=submitRequest('ESMSI:OpenSeverityPanel') >" + Severity + "</a>&nbsp<img style='cursor:hand;' onclick=submitRequest('ESMSI:OpenSeverityPanel') id='imgSeverity' src='" + imageDir + "icon_header_menu_closed.png'>";
+		document.getElementById("Severity").className="v2";
+	} else {
+		document.getElementById('Severity').innerHTML = Severity; 
+		document.getElementById("Severity").className="v5";
+	}
+}
+
+function setSubcount() {
+	if(TicketPriv) {
+		if(SubCount==0) {
+			document.getElementById('SubCount').innerHTML = SubCount; 
+		} else {
+			switch (TicketStatus) {
+				case "Closed":
+					//Authorized users with TTR Adjust can adjust if ticket <= Closed
+					if(hasPrivilege("Adjust TTR")) {
+						document.getElementById('SubCount').innerHTML = "<a style='cursor:hand;' class='v2' href='#' onclick=submitRequest('ESMSI:OpenSubCount') >" + SubCount + "</a>&nbsp<img style='cursor:hand;' onclick=submitRequest('ESMSI:OpenSubCount') id='imgSubcount'  src='" + imageDir + "icon_header_menu_closed.png'>";
+					} else {
+						document.getElementById('SubCount').innerHTML = SubCount; 
+					} 
+					break;
+				default:
+					//Authorized users could edit if ticket < Closed
+					document.getElementById('SubCount').innerHTML = "<a style='cursor:hand;' class='v2' href='#' onclick=submitRequest('ESMSI:OpenSubCount') >" + SubCount + "</a>&nbsp<img style='cursor:hand;' onclick=submitRequest('ESMSI:OpenSubCount') id='imgSubcount'  src='" + imageDir + "icon_header_menu_closed.png'>";
+					break;
+			}
+		}
+	} else {
+		document.getElementById('SubCount').innerHTML = SubCount; 
+	}
+}
+
+function setAssigned() {
+	if (Assigned !=""){
+		document.getElementById('Assigned').innerHTML = buildContactLink(Assigned,'#80c2ff');
+	}
+	else {
+		document.getElementById('Assigned').innerHTML = Assigned;
+	}
+}
+
+function setOutageTime() {
+	var Duration = 0;
+	var OutageStatus = "inactive";
+
+	if(typeof outage!="undefined") {
+		Duration = outage.duration+"000";
+		OutageStatus = outage.status;
+	}
+	if(OutageStatus=='active') {
+		DurationTicker = 'On';
+	} else {
+		DurationTicker = 'Off';
+	}
+
+	startTimer(Duration, 1000, DurationTicker,'Duration');
+}
+
+function setESR() {
+	var className = checkESRStatus(ESR,Threshold);
+	
+	if(TicketPriv) {
+		switch (TicketStatus) {
+			case "Resolved":
+				document.getElementById("ESR").innerHTML = ESR;
+				break;
+			case "Closed":
+				document.getElementById("ESR").innerHTML = ESR;
+				break;
+			default:
+				//Norgie available if Status < "Resolved" AND EditMode = "Ticket"
+				document.getElementById("ESR").innerHTML = "<a id='ESRLink' style='cursor:hand;text-decoration: none;' href='#' onclick=submitRequest('ESMSI:OpenESRPanel') >" + ESR + "</a>&nbsp<img style='cursor:hand;' onclick=submitRequest('ESMSI:OpenESRPanel') id='imgESR' src='" + imageDir + "icon_header_menu_closed.png'>";
+				document.getElementById("ESRLink").className = className;
+				break;
+		}	
+	} else {
+		document.getElementById("ESR").innerHTML = ESR;
+	}
+	document.getElementById("ESR").className = className;
+}
+
+function setNextAction() {
+	if(TicketPriv) {
+		switch (TicketStatus) {
+			case "Closed":
+				document.getElementById("imgUpdate").src = "" + imageDir + "button_next_action_disabled.png";
+				document.getElementById("imgUpdate").style.cursor = "default";
+				document.getElementById("imgUpdate").disabled = true;
+				break;
+			default:
+				document.getElementById("imgUpdate").src = "" + imageDir + "button_next_action.png";
+				document.getElementById("imgUpdate").style.cursor = "hand";
+				document.getElementById("imgUpdate").disabled = false;
+				break;
+		}
+	} else {
+		document.getElementById("imgUpdate").src = "" + imageDir + "button_next_action_disabled.png";
+		document.getElementById("imgUpdate").style.cursor = "default";
+		document.getElementById("imgUpdate").disabled = true;
+	}
+	
+	if(NextAction.length==0) {
+		document.getElementById('nextaction').style.width = "80%";
+	} else {
+		document.getElementById('nextaction').innerHTML = NextAction;
+	}
+	document.getElementById('nextaction').className='v6';
+	
+}
+
+function submitRequest(event) {
+	if(TicketPriv) {
+		if(event!="") {
+			//alert('Remedy will RunGuide:' + event);
+			Controller.sendEventToParentForm('RunGuide',event);
+		}
+	}
+}
+
+function checkESRStatus(ESR,Threshold) {
+
+	var currentTime = new Date();
+	var esrTime = new Date(ESR);
+	
+	if(Threshold=="") {
+		var thresholdTime = 0
+	} 
+	else {
+		var thresholdTime = new Date(ConvertUTC(Threshold));
+	}
+	
+    //alert('current time: ' + currentTime + ' esr time: ' + esrTime + ' threshold time: ' + thresholdTime);
+	if(currentTime > esrTime) {
+		return "redESR";
+	}
+	else if(currentTime < thresholdTime || thresholdTime ==0) {
+		return "greenESR";
+	}
+	else {
+	    return "yellowESR";
+	}
+
+}
+
+var counter = 0;
+function startTimer(duration,increment,ticker,element) {
+	var t;
+	var diff_val = parseInt(duration) + parseInt(counter);
+	var Hours = diff_val / (1000*60*60)
+	var Minutes =   (diff_val % (1000*60*60)) / (1000*60)
+	var Seconds = ((diff_val % (1000*60*60)) % (1000*60)) / 1000
+
+	var str = "";
+	var strLength;
+
+	if (Math.floor(Seconds) < 10) {
+		Seconds = "0"+Math.floor(Seconds);
+	}
+	else {
+		Seconds =Math.floor(Seconds);
+	}
+
+	if (Math.floor(Minutes)<10) {
+		Minutes = "0"+Math.floor(Minutes);
+	}
+	else {
+		Minutes =Math.floor(Minutes);
+	}
+
+	if (Math.floor(Hours)<10) {
+		Hours = "0"+Math.floor(Hours);
+	}
+	else {
+		Hours =Math.floor(Hours);
+	}
+
+	if(isNaN(Seconds)) {
+		document.getElementById('Duration').innerHTML="<a style='cursor:hand;' class='v2' href='#' onclick=Controller.sendEventToParentForm('RunGuide','ESMSI:OpenTTRPanel') >" + duration + "</a>&nbsp<img style='cursor:hand;' onclick=Controller.sendEventToParentForm('RunGuide','ESMSI:OpenTTRPanel') id='imgDuration' src='" + imageDir + "icon_header_menu_closed.png'>";
+	}
+	else {
+		document.getElementById(element).innerHTML="<a style='cursor:hand;' class='v2' href='#' onclick=Controller.sendEventToParentForm('RunGuide','ESMSI:OpenTTRPanel') >" + Hours+":"+Minutes+":"+Seconds + "</a>&nbsp<img style='cursor:hand;' onclick=Controller.sendEventToParentForm('RunGuide','ESMSI:OpenTTRPanel') id='imgDuration' src='" + imageDir + "icon_header_menu_closed.png'>";
+	}
+	
+	if(ticker=='On') {
+		counter = parseInt(counter) + parseInt(increment)
+		t=setTimeout("startTimer("+duration+","+increment+",'"+ticker+"','"+element+"')",increment);
+	}
+
+}
+
+
+
+</script>
+
+</head>
+<body onload="initSetupScript()" leftmargin="0px" topmargin="0px" marginwidth="0px" marginheight="0px" bgcolor="#30445a">
+
+<!-- one table with top banner-->
+<SPAN id='ticketlock'></SPAN>
+<!-- one big table with 2 cells (DTS & header content)-->
+<TABLE cellspacing="0" cellpadding="0" border="0">
+<!-- first cell = DTS)-->
+    <TR>
+      <TD class="t1"><span id='DTS'></span></TD>
+<!-- second cell = header content)-->
+      <TD>
+         <TABLE cellpadding="0" cellspacing="0" width="100%" border="0">
+<!-- first row of header content)-->
+            <TR>
+               <TD style="padding:3px; 0px 0px 0px;">
+                  <TABLE class="table1" cellpadding="0" cellspacing="0" border="0">
+                     <TR>
+                        <TD valign="baseline"><DIV class="t2" style="width:220px" id='TicketID'></DIV></TD>
+                        <TD valign="baseline"><DIV class="v1" style="width:285px" id='ProblemSummary'></DIV></TD>
+                        <TD valign="baseline"><DIV class="h1" style="width:85px"></DIV></TD>
+                        <TD valign="baseline"><DIV class="v1" style="width:460px" id='Element'></DIV></TD>
+                     </TR>
+                  </TABLE>
+               </TD>
+            </TR>
+<!-- second row of header content)-->          
+            <TR>
+               <TD>
+                  <TABLE class="table2"  border="0">
+                     <TR>
+                        <TD class="h2" valign="baseline">Service Condition:  <span class="v5" id='ServiceCondition'></span></TD>
+                        <TD class="h2" valign="baseline">Severity:  <span class="v2" id='Severity'></span></TD> 
+                        <TD class="h2" valign="baseline">Subcount:  <span class="v2" id='SubCount'></span></TD>
+                        <TD class="h2" valign="baseline">Status:  <span class="v5" id='Status'></span></TD>
+                        <TD class="h2" valign="baseline">Assigned:  <span class="v3" id='Assigned'></span></TD>
+                        <TD class="h2" valign="baseline">Outage Time:  <span class="v2" id='Duration' ></span></TD></TD>
+                     </TR>
+                  </TABLE>
+               </TD>
+            </TR>
+		</TABLE>
+    </TR>
+	<TR>
+		<TD colspan="2" width="1110px" style="padding-bottom:6px;">
+		<TABLE border="0" cellpadding="0" cellspacing="0">
+			<TR>
+				<TD class="h3"><img style="padding-left:5px;" id="imgUpdate" src="http://chamar2:9876/images/button_update.png" onclick=submitRequest('ESMSI:OpenNextAction')></TD>
+				<TD width="80%" class="h3"><span class="v6" id='nextaction' ></span></TD>
+				<TD class="h3right">Estimated Service Restore: <span class="v2" id='ESR' ></span></TD>
+			</TR>
+		</TABLE>
+		</TD>
+	</TR>
+</TABLE>
+
+</body>
+</html>
