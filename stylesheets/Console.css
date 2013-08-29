@@ -1,0 +1,214 @@
+*
+{
+	FONT-FAMILY: SANS-SERIF;
+	FONT-SIZE: 10PT;
+}
+BODY 
+{
+	background-color: #30445a;
+	MARGIN: 0PX 0PX;
+  }
+H1
+{
+	text-align: center;
+}
+
+BUTTON
+{
+	height: 21px;
+	padding: 2px 10px;
+	margin: 2px;
+	cursor: pointer;
+	color: RGB(51,51,51);
+}
+BUTTON.PRIMARY
+{
+	background: -webkit-gradient(linear, left top, left bottom, from(#D9ECB6), to(#8EC247));
+	background: -moz-linear-gradient(top,  #D9ECB6,  #8EC247);
+	filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#D9ECB6', endColorstr='#8EC247');
+	border: 1px solid #6BA322;
+	font-weight: bold;
+#	text-decoration:underline;
+}
+BUTTON.SECONDARY
+{
+	background: -webkit-gradient(linear, left top, left bottom, from(#EEF1F3), to(#C7D1DB));
+	background: -moz-linear-gradient(top,  rgb(238,241,245),  rgb(199,209,219));
+	filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#EEF1F3', endColorstr='#C7D1DB');
+	border: 1px solid rgb(152,162,175);
+	font-weight: normal;
+#	text-decoration:underline;
+}
+BUTTON.DISABLE
+{
+	COLOR: RGB(128,128,128);
+}
+#TICKET
+{
+	background-image:url('../images/SI_HEADER.png');
+	background-repeat:repeat-x;
+	POSITION:ABSOLUTE;
+	MIN-HEIGHT: 720PX;
+	MIN-WIDTH: 1280PX;
+	HEIGHT: 100%;
+	LEFT: 0PX;
+	TOP: OPX;
+	RIGHT: 0PX;
+}
+#HEADER
+{
+	background-image:url('../images/SI_BANNER.png');
+	background-repeat:no-repeat;
+	HEIGHT: 127PX;
+	POSITION: ABSOLUTE;
+	LEFT: 0PX;
+	TOP: 0PX;
+	RIGHT: 0PX;
+}
+#FOOTER
+{
+	background-color: #444B52;
+	position: absolute;
+	bottom: 0px;
+	left: 0px;
+	right: 0px;
+	height: 25px;
+	color: white;
+	padding: 0px 8px;
+	border-top: 1px solid RGB(0,0,0);
+	border-bottom: 1px solid RGB(0,0,0);
+}
+#ACTION
+{
+	HEIGHT: 27PX;
+	POSITION:ABSOLUTE;
+	LEFT: 0PX;
+	TOP:127PX;
+	RIGHT: 0PX;
+	BACKGROUND-COLOR: #CDECB6;
+}
+#DETAILS
+{
+	BACKGROUND-COLOR: #FFFFFF;
+	WIDTH: 62.88%;
+	MIN-HEIGHT: 540PX;
+	BOTTOM: 27px;
+	POSITION: ABSOLUTE;
+	LEFT: 37.12%;
+	TOP: 154PX;
+	border-radius:0px;
+	border:0px;
+}
+#WORKLOG
+{
+	WIDTH: 37.12%;
+	MIN-HEIGHT: 540PX;
+	BOTTOM: 27px;
+	POSITION:ABSOLUTE;
+	LEFT: 0PX;
+	TOP: 154PX;
+	background-color: #E8EAEC;
+}
+#btnRefresh, #btnPrint
+{
+	FLOAT: RIGHT;
+}
+.SUB-NAV
+{ 
+	position:relative; 
+	top: 0px; 
+	background-color: #bfd1e2; 
+	color: #333333; 
+	margin: 0px; 
+	padding: 2px 2px; 
+	height: 21px; 
+	border-bottom: 1px solid RGB(174,176,178);
+}
+
+.Column 
+{
+	float: left;
+	width: 33.333%;
+	overflow: auto;
+}
+.SectionData 
+{
+	color: #666666;
+	margin: 0px 0px;
+}
+
+.ui-widget-content{}
+.ui-widget-header{background-color:#A9AFB2;}
+.ui-widget{}
+.ui-corner-all{}
+.ui-corner-bottom{}
+.ui-corner-top{border-radius: 6px 6px 0px 0px;}
+.ui-helper-clearfix{}
+.ui-helper-reset{}
+.ui-state-active{}
+.ui-state-default{border: 1px solid #777;padding: 0px 24px;margin: 11px 2px 0px; float: left;background-color:#E8EAEC;}
+.ui-state-hover{background-color:#ccc;}
+.ui-tabs-active{border-bottom: 1px solid #bfd1e2;background-color:#bfd1e2;cursor:text;margin-top: 7px;padding-bottom: 4px;font-size: 1.1em;font-weight: bolder;}
+.ui-tabs-nav{padding: 0px 4px;height: 28px; margin: 0px 0px;border-bottom:1px solid #777}
+.ui-tabs-panel{position:relative;right: 0px; left: 0px;top: 0px; padding:5px;}
+.ui-tabs{}
+.ui-tabs-anchor{text-decoration: none;color: #333333;}
+[aria-expanded="true"] {}
+[role="tabpanel"] {}
+[role="tablist"]{}
+li
+{
+}
+ul
+{
+	list-style-type: none;
+}
+FIELDSET 
+{
+	BORDER: 1PX SOLID #CACACA;
+	MARGIN: 0PX 5PX 5PX 5PX;
+	PADDING: 5PX 10PX;
+}
+LEGEND 
+{
+	BORDER-LEFT: 1PX SOLID #CACACA;
+	BORDER-RIGHT: 1PX SOLID #CACACA;
+	MARGIN-LEFT: -4PX;
+	FONT-WEIGHT: BOLD;
+	PADDING: 0PX 4PX;
+}
+.TABLEBOX, .DETAILBOX {
+	margin: 5px;
+	height: 45%;
+	position:relative;
+	top:0px;
+}
+.DETAILBOX {
+	background-color: #E7E5DB;
+	}
+.TABLEBOX {
+	background-color: #989B9F;
+	}
+.TitleDetail {
+	background-color: #B7B3A6;
+	font-weight: bold;
+	padding: 4px 10px;
+	}
+.InputDetail {
+	padding: 4px 10px;
+}
+
+.btn_dropdown {
+color: #333333;
+background-color:#bddf95;
+padding:5px 30px 6px 30px;
+height: 27px;
+border: 0;
+float: left;
+border-top: #e5f2d5 1px solid;
+border-right: #95b276 1px solid;
+border-bottom: #95b276 1px solid;
+border-left: #e5f2d5 1px solid;
+cursor:hand;
+}
+

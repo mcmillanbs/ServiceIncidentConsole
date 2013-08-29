@@ -1,0 +1,45 @@
+<html>
+<head>
+<title>
+Action Bar
+</title>
+
+<style>
+button.dropdown {
+	color: #333333;
+	background-color:#bddf95;
+	padding:5px 30px 6px 30px;
+	height: 27px;
+	border-top: #e5f2d5 1px solid;
+	border-right: #95b276 1px solid;
+	border-bottom: #95b276 1px solid;
+	border-left: #e5f2d5 1px solid;
+}
+</style>
+
+<script>
+var formElements = new Array (
+	{'type':'dropdown','label':'Resolution Actions',   'guide':'ESMSI:OpenResolutionActions'  },
+	{'type':'dropdown','label':'Ticket Linking',       'guide':'ESMSI:OpenTicketLinking'      },
+	{'type':'dropdown','label':'External Actions',     'guide':'ESMSI:OpenExternalActions'    },
+	{'type':'dropdown','label':'Change Requests',      'guide':'ESMSI:OpenChangeRequests'     },
+	{'type':'dropdown','label':'Ticket Assignment',    'guide':'ESMSI:OpenTicketAssign'       },
+	{'type':'more',    'label':'Edit Ticket',          'guide':'ESMSI:EditTicket'             }
+);
+function buildForm(specs) {
+	for (e=0; e < specs.length; e++ ) {
+		document.write('<button CLASS=\'' + specs[e].type + '\' onclick=alert(\'' + specs[e].guide + '\')>' + specs[e].label + '</button>');
+	}
+}
+function initSetupScript() {
+	buildForm(formElements);    
+}
+</script>
+
+</head>
+
+<body onload="initSetupScript()">
+</body>
+
+</html>
+

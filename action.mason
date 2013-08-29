@@ -1,0 +1,24 @@
+<script>
+var formElements = new Array (
+{'type':'dropdown','label':'Resolution Actions','guide':'ESMSI:OpenResolutionActions'},
+{'type':'dropdown','label':'Ticket Linking','guide':'ESMSI:OpenTicketLinking'},
+{'type':'dropdown','label':'External Actions','guide':'ESMSI:OpenExternalActions'},
+{'type':'dropdown','label':'Change Requests','guide':'ESMSI:OpenChangeRequests'},
+{'type':'dropdown','label':'Ticket Assignment','guide':'ESMSI:OpenTicketAssign'},
+{'type':'more','label':'Edit Ticket','guide':'ESMSI:EditTicket'}
+);
+
+imageDir = "images/";
+
+
+function buildForm(elementList) {
+	document.write("<form class=Action>")
+	for (e=0; e < elementList.length; e++ ) {
+		document.write("<button class='" + elementList[e].type + "' onclick=alert('" + elementList[e].guide + "')>" + elementList[e].label + "</button>");
+	}
+	document.write("</form>")
+}
+
+buildForm(formElements);
+
+</script>

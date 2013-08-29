@@ -1,0 +1,151 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Action Bar</title>
+<!---->
+<style>
+* {
+font-family: Sans-Serif;
+font-size: 10pt;
+}
+body {
+margin-left:0px;
+margin-top:0px;
+background:#cdecb6;
+}
+ 
+button.dropdown {
+color: #333333;
+background-color:#bddf95;
+padding:5px 30px 6px 30px;
+height: 27px;
+border: 0;
+float: left;
+border-top: #e5f2d5 1px solid;
+border-right: #95b276 1px solid;
+border-bottom: #95b276 1px solid;
+border-left: #e5f2d5 1px solid;
+cursor:hand;
+margin:0px;
+}
+
+button.hover {
+color: #333333;
+background-color:#acca89;
+padding:5px 30px 6px 30px;
+height: 27px;
+border: 0;
+float: left;
+border-top: #e5f2d5 1px solid;
+border-right: #95b276 1px solid;
+border-bottom: #95b276 1px solid;
+border-left: #e5f2d5 1px solid;
+cursor:hand;
+
+}
+
+button.Disabled {
+color: #868f93;
+background-color:#bddf95;
+padding:5px 30px 6px 30px;
+height: 27px;
+border: 0;
+float: left;
+border-top: #e5f2d5 1px solid;
+border-right: #95b276 1px solid;
+border-bottom: #95b276 1px solid;
+border-left: #e5f2d5 1px solid;
+}
+
+button.more {
+color: #333333;
+background-color:#eee378;
+padding:5px 30px 6px 30px;
+height: 27px;
+border: 0;
+float: left;
+border-top: #f8f4ca 1px solid;
+border-right: #a7a355 1px solid;
+border-bottom: #a7a355 1px solid;
+border-left: #f8f4ca 1px solid;
+cursor:hand;
+margin:0px;
+}
+input[type="button"], input[type="submit"], input[type="reset"], input[type="file"]::-webkit-file-upload-button, button {
+padding: 5px 30px 6px 30px;
+}
+user agent stylesheetinput[type="button"], input[type="submit"], input[type="reset"], input[type="file"]::-webkit-file-upload-button, button {
+-webkit-align-items: flex-start;
+text-align: center;
+cursor: default;
+color: buttontext;
+padding: 5px 30px 6px 30px;
+border: 2px outset buttonface;
+border-image-source: initial;
+border-image-slice: initial;
+border-image-width: initial;
+border-image-outset: initial;
+border-image-repeat: initial;
+background-color: buttonface;
+box-sizing: border-box;
+margin: 0px;
+}
+user agent stylesheetinput, textarea, keygen, select, button, isindex {
+margin: 0px;
+font: -webkit-small-control;
+color: initial;
+letter-spacing: normal;
+word-spacing: normal;
+text-transform: none;
+text-indent: 0px;
+text-shadow: none;
+display: inline-block;
+text-align: start;
+}
+user agent stylesheetinput, textarea, keygen, select, button, isindex, meter, progress {
+-webkit-writing-mode: horizontal-tb;
+}
+user agent stylesheetbutton {
+-webkit-appearance: button;
+}
+
+</style>
+<!---->
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+<!---->
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui.min.js"></script>
+<!---->
+<script type="text/javascript">
+
+var ActionElements = new Array (
+	{'type':'dropdown','label':'Resolution Actions',   'guide':'ESMSI:OpenResolutionActions'  },
+	{'type':'dropdown','label':'Ticket Linking',       'guide':'ESMSI:OpenTicketLinking'      },
+	{'type':'dropdown','label':'External Actions',     'guide':'ESMSI:OpenExternalActions'    },
+	{'type':'dropdown','label':'Change Requests',      'guide':'ESMSI:OpenChangeRequests'     },
+	{'type':'dropdown','label':'Ticket Assignment',    'guide':'ESMSI:OpenTicketAssign'       },
+	{'type':'more',    'label':'Edit Ticket',          'guide':'ESMSI:EditTicket'             }
+);
+
+function buildActionButtons(elementList) {
+	var Button_Return = new String;
+	for (e=0; e < elementList.length; e++ ) {
+//		Button_Return += "<button class='" + elementList[e].type + "' onclick=alert('" + elementList[e].guide + "') >" + elementList[e].label + "</button>\n";
+		Button_Return += "<button onclick=alert('" + elementList[e].guide + "') >" + elementList[e].label + "</button>\n";
+	}
+	return Button_Return;
+}
+
+$(document).ready(function(){
+	$("#ACTION").empty();
+	$("#ACTION").append('<form>\n' + buildActionButtons(ActionElements) + '\n</form>\n');
+});
+
+</script>
+<!---->
+</head>
+
+<body>
+<DIV ID="ACTION"></DIV>
+</body>
+</html>
+

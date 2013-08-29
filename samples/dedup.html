@@ -1,0 +1,144 @@
+<html>
+<head>
+<title>Duplicate Tickets</title>
+<style type="text/css">
+* {
+font-family: Sans-Serif;
+font-size: 8pt;
+color: #333333;
+background-color:#f5f8fb;
+}
+div.duplicateTickets {
+width: 179px;
+height: 289px;
+border: thin solid green;
+}
+.ticket {
+cursor:pointer;
+}
+#text, .dupicateText {
+padding: 0 5;
+}
+#ticketlist{
+margin: 5 0 0 5;
+overflow-y: auto;
+height: 192px;
+}
+.duplicateAlert {
+font-weight:bold;
+text-align:center;
+}
+</style>
+<!--EventFrameworkScript-->
+<script type="text/javascript">
+
+<!--NoRightClick-->
+
+<!--UserContent-->
+var dup_array = [
+	[
+		'HR07',
+		'HR07.000741.NODE.Comcast',
+		[
+			'SI000018521',
+			'SI000019630',
+			'SI000022450',
+			'SI000024614',
+			'SI000027545',
+			'SI000032720',
+			'SI000033249',
+			'SI000033250',
+			'SI000033251',
+			'SI000033262',
+			'SI000033357',
+			'SI000033942',
+			'SI000034928',
+			'SI000033262',
+			'SI000034966',
+			'SI000035034',
+			'SI000035365',
+			'SI000033262',
+			'SI000035494',
+			'SI000037010',
+			'SI000041199',
+			'SI000042587',
+			'SI000043581'
+		]
+	]
+];
+
+var dup_tickets = new Object;
+
+function initSetupScript() {
+	reformatData(dup_array);
+	buildForm('ticketlist');
+}
+
+function reformatData(d_array) {
+// this converts the given dup_array (in user content) into an object containing the duplicate tickets.
+	var x;
+	for (x=0; x< d_array.length; x++) {
+		var element_name = d_array[x][0];
+		var element_uid  = d_array[x][1];
+		var dup_ticket_list = d_array[x][2];
+		var d;
+		for (d=0; d < dup_ticket_list.length; d++) {
+			var ticket = dup_ticket_list[d];
+			if ( dup_tickets[ticket] == undefined ) {
+				dup_tickets[ticket] = [[element_name,element_uid]];
+			}
+			else {
+				dup_tickets[ticket].push([element_name,element_uid]);
+			}
+		}
+	}
+}
+
+function buildForm(target_id) {
+	var target = document.getElementById(target_id);
+	var output = '';
+	var ticket;
+	var ticketList = "";
+	var lastTicket = "";
+	
+	//loop through and get unique list of tickets
+	for (ticket in dup_tickets) {
+		var e;
+		var element_list = '';
+		for ( e=0; e<dup_tickets[ticket].length; e++) {
+			element_list = element_list + dup_tickets[ticket][e][0] + ';';
+			if(ticket!=lastTicket) {
+				ticketList += ticket + ",";
+			}
+			lastTicket = ticket		
+		}
+	}
+	//take off the last "," in the string
+	ticketList = ticketList.substr(0,ticketList.length-1);
+	//place list in an array to sort correctly
+	var arrDupTicketList;
+	arrDupTicketList = ticketList.split(",");
+	arrDupTicketList.sort();
+	for ( e=0; e<arrDupTicketList.length; e++) {
+		ticket = arrDupTicketList[e];
+/*
+		output = output + "<div class='ticket'>" + ticket + " <span onclick=\"alert('Ticket ID: " + ticket + "');\"><img src='http://chamar2:9876/images/icon_open_ticket_summary.png'></span></div>";
+*/
+		output = output + '<div class=\'ticket\' onclick="alert(\'Ticket ID: ' + ticket + '\');">' + ticket + ' <span><img src=\'http://chamar2:9876/images/icon_open_ticket_summary.png\'></span></div>';
+	}
+    target.innerHTML = output;
+}
+
+</script>
+</head>
+
+<body onload="initSetupScript()">
+<div class='duplicateTickets'>
+<TABLE>
+<tr><td><img src='http://chamar2:9876/images/exclamation.JPG'></td><td class='duplicateAlert'>Possible Duplicates</td></tr>
+<tr><td colspan=2 class='duplicateText'>The elements highlighted in red are found on one or more of the following existing tickets:</td></tr>
+<tr><td colspan=2><div id='ticketlist'></div></td></tr>
+</table>
+</div>
+</body>
+</html>
